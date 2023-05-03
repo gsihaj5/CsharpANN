@@ -5,17 +5,15 @@ namespace CsharpANN
     {
         public int[] networkShape;
         public Layer[] layers;
-        private float learningRate;
 
         public NeuralNetwork(int[] networkShape, float learningRate)
         {
-            this.learningRate = learningRate;
             this.networkShape = networkShape;
 
             layers = new Layer[networkShape.Length - 1];
             for (int i = 0; i < layers.Length; i++)
             {
-                layers[i] = new Layer(networkShape[i], networkShape[i + 1]);
+                layers[i] = new Layer(networkShape[i], networkShape[i + 1], learningRate);
             }
         }
 
@@ -42,33 +40,17 @@ namespace CsharpANN
 
         public void BackPropagate(float[] expected_output, float[] input_array)
         {
-            float[][] errors = new float[layers.Length][];
-
             for (int i = layers.Length - 1; i >= 0; i--)
             {
-                Layer current_layer = layers[i];
-
-                if (i == layers.Length - 1) //output layer
+                if (i == layers.Length - 1) //1 layer before output
                 {
-                    Layer prev_layer = layers[i - 1];
 
-
-                    for (int node = 0; node < current_layer.nodeArray.Length; node++)
-                    {
-                        float delta = current_layer.nodeArray[node] - expected_output[node];
-
-                        for (int input = 0; input < current_layer.GetInputCount(); input++)
-                        {
-                            z = current_layer.weightsArray[node, input] - prev_layer.nodeArray[input];
-                            dLdZ = delta * ReLUDerivative(z);
-
-                            errors[i] = 
-                        }
-                    }
-
-
+                    layers[i].Backward(expected_output, layers[i - 1].nodeArray);
                 }
-
+                else
+                {
+                    layers[i].Backward(layers[i + 1]);
+                }
             }
         }
         private void ReLUDerivative(float value)

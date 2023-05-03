@@ -6,12 +6,15 @@ namespace CsharpANN
     public class Layer
     {
         public float[,] weightsArray;
+        public float[,] deltaWeightsArray;
         public float[] biasesArray;
+        public float[] deltaBiasArray;
         public float[] nodeArray;
 
         private int n_nodes;
         private int n_inputs;
         private int batch_number;
+        private float learningRate;
 
         public int GetInputCount()
         {
@@ -23,14 +26,18 @@ namespace CsharpANN
         }
 
         //batch_number is how many training data grouped to update the weight
-        public Layer(int n_inputs, int n_nodes, int batch_number)
+        public Layer(int n_inputs, int n_nodes, float learningRate)
         {
             this.n_inputs = n_inputs;
             this.n_nodes = n_nodes;
-            this.batch_number = batch_number;
+            this.learningRate = learningRate;
 
             weightsArray = new float[n_nodes, n_inputs];
+            deltaWeightsArray = new float[n_nodes, n_inputs];
+
             biasesArray = new float[n_nodes];
+            deltaBiasArray = new float[n_nodes];
+
             nodeArray = new float[n_nodes];
 
             Random rand = new Random();
@@ -63,6 +70,19 @@ namespace CsharpANN
                 }
                 nodeArray[i] += biasesArray[i];
             }
+        }
+
+        public void Backward(float[] outputsArray, float[] prevOutput)
+        {
+            //weight adjustment
+            for (int i = 0; i < n_nodes; i++)
+            {
+                for (int j = 0; j < n_inputs; j++)
+                {
+                    deltaWeightsArray[i, j] = //(error * derivative of ReLU) * previous output
+                }
+            }
+
         }
 
         public void Activation()
