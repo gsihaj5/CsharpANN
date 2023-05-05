@@ -34,9 +34,11 @@ namespace CsharpANN
 
             weightsArray = new float[n_nodes, n_inputs];
             deltaWeightsArray = new float[n_nodes, n_inputs];
+            Array.Clear(deltaWeightsArray, 0, deltaWeightsArray.Length);
 
             biasesArray = new float[n_nodes];
             deltaBiasArray = new float[n_nodes];
+            Array.Clear(deltaBiasArray, 0, deltaBiasArray.Length);
 
             nodeArray = new float[n_nodes];
 
@@ -75,15 +77,20 @@ namespace CsharpANN
         public void Backward(float[] outputsArray, float[] prevOutput)
         {
             //weight adjustment
-            for (int i = 0; i < n_nodes; i++)
+            for (int i = 0; i < n_inputs; i++)
             {
-                for (int j = 0; j < n_inputs; j++)
+                for (int j = 0; j < n_nodes; j++)
                 {
-                    deltaWeightsArray[i, j] = //(error * derivative of ReLU) * previous output
+                    deltaWeightsArray[j, i] += (error * ReLUDerivative(nodeArray[j])) * prevOutput[i];
                 }
             }
-
         }
+
+        private void ReLUDerivative(float value)
+        {
+            return value > 0 ? 1f : 0f;
+        }
+
 
         public void Activation()
         {

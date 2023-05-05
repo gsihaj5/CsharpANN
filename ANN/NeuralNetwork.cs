@@ -27,7 +27,7 @@ namespace CsharpANN
                     layers[i].Forward(inputs);
                     layers[i].Activation();
                 }
-                else if (i == layers.Length - 1)
+                else
                 {
                     layers[i].Forward(layers[i - 1].nodeArray);
                     layers[i].Activation();
@@ -52,10 +52,6 @@ namespace CsharpANN
                     layers[i].Backward(layers[i + 1]);
                 }
             }
-        }
-        private void ReLUDerivative(float value)
-        {
-            return value > 0 ? 1f : 0f;
         }
 
         public void UpdateWeight()
