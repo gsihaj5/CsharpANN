@@ -7,13 +7,14 @@ namespace CsharpANN
     {
         public float[,] weightsArray;
         public float[,] deltaWeightsArray;
-        public float[] biasesArray;
+        public float[,] sumWeightError;
+        public float[,] biasesArray;
         public float[] deltaBiasArray;
         public float[] nodeArray;
 
         private int n_nodes;
         private int n_inputs;
-        private int batch_number;
+        private int batch_index;
         private float learningRate;
 
         public int GetInputCount()
@@ -25,16 +26,19 @@ namespace CsharpANN
             return n_nodes;
         }
 
-        //batch_number is how many training data grouped to update the weight
-        public Layer(int n_inputs, int n_nodes, float learningRate)
+        public Layer(int n_inputs, int n_nodes, float learningRate, int learning_batch)
         {
             this.n_inputs = n_inputs;
             this.n_nodes = n_nodes;
             this.learningRate = learningRate;
+            this.batch_index = 0;
 
             weightsArray = new float[n_nodes, n_inputs];
             deltaWeightsArray = new float[n_nodes, n_inputs];
             Array.Clear(deltaWeightsArray, 0, deltaWeightsArray.Length);
+
+            sumWeightError = new float[learning_batch, n_nodes];
+            Array.Clear(sumWeightError, 0, sumWeightError.Length);
 
             biasesArray = new float[n_nodes];
             deltaBiasArray = new float[n_nodes];
@@ -74,16 +78,55 @@ namespace CsharpANN
             }
         }
 
-        public void Backward(float[] outputsArray, float[] prevOutput)
+        public void BackwardOutput(float[] outputsArray, Layer prevLayer, int batchIndex)
         {
+            float[] prevOutput = prevLayer.nodeArray;
             //weight adjustment
-            for (int i = 0; i < n_inputs; i++)
+            for (int i = 0; i < n_nodes; i++)
             {
-                for (int j = 0; j < n_nodes; j++)
+                float error = outputsArray[i] - nodeArray[i];
+                float delI = -error * ReLUDerivative(nodeArray[i])
+
+                for (int j = 0; j < n_inputs; j++)
                 {
-                    deltaWeightsArray[j, i] += (error * ReLUDerivative(nodeArray[j])) * prevOutput[i];
+                    deltaWeightsArray[i, j] += delI * prevOutput[j];
+                    prevLayer.sumWeightError[batchIndex, j] += delI * weightsArray[i, j];
                 }
             }
+        }
+        public void BackwardHidden(Layer prevLayer, int batchIndex)
+        {
+            float[] prevOutput = prevLayer.nodeArray;
+            //weight adjustment
+            for (int i = 0; i < n_nodes; i++)
+            {
+                float error = outputsArray[j] - nodeArray[i];
+                float delI = ReLUDerivative(nodeArray[i]) * sumWeightError[i];
+
+                for (int j = 0; j < n_inputs; j++)
+                {
+                    deltaWeightsArray[i, j] += delI * prevOutput[j];
+                    prevLayer.sumWeightError[batchIndex, j] += delI * weightsArray[i, j];
+                }
+            }
+        }
+
+        public void BackwardInput(float[] inputsArray, int batchIndex)
+        {
+            float[] prevOutput = inputsArray;
+            //weight adjustment
+            for (int i = 0; i < n_nodes; i++)
+            {
+                float error = outputsArray[j] - nodeArray[i];
+                float delI = ReLUDerivative(nodeArray[i]) * sumWeightError[i];
+
+                for (int j = 0; j < n_inputs; j++)
+                {
+                    deltaWeightsArray[i, j] += delI * prevOutput[j];
+                    prevLayer.sumWeightError[batchIndex, j] += delI * weightsArray[i, j];
+                }
+            }
+
         }
 
         private void ReLUDerivative(float value)
