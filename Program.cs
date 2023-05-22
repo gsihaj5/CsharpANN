@@ -7,10 +7,30 @@ namespace CsharpANN
     {
         public static void Main()
         {
+            float max = 0;
+            for (int i = 1; i <= 100; i++)
+            {
+                //Console.Write("=====================");
+                //Console.WriteLine(100 * i);
+                int maxTrain = 100 * i;
+                float accuracy = TrainOnData(maxTrain);
+                if (accuracy > max) max = accuracy;
+                Console.WriteLine($"maxtrain: {maxTrain} accuracy: {accuracy}");
+            }
+            Console.WriteLine(max);
+        }
+
+        public static float TrainOnData(int maxTraining)
+        {
+
             using (var reader = new StreamReader(@"./mushrooms.csv"))
             {
-                int[] networkShape = { 9, 18, 18, 2 };
-                NeuralNetwork nn = new NeuralNetwork(networkShape, 1);
+                int[] networkShape = { 9, 20, 2 };
+                NeuralNetwork nn = new NeuralNetwork(networkShape, .01f, 100, "sigmoid");
+                int numberOfTraining = 0;
+
+                int numberOfTruth = 0;
+                int numberOfFalse = 0;
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
@@ -28,33 +48,45 @@ namespace CsharpANN
                         values[9]
                     );
 
-                    for (int i = 0; i < mushroom.GetInputNodes().Length; i++)
+                    float[] hasil = nn.Process(mushroom.GetInputNodes());
+
+                    if (numberOfTraining > maxTraining)
                     {
-                        float[] hasil = nn.Process(mushroom.GetInputNodes());
+                        if (hasil[0] < hasil[1])
+                        {
+                            if (mushroom.EdibleValue() == 1f) numberOfTruth++;
+                            else numberOfFalse++;
+                        }
+                        else
+                        {
+                            if (mushroom.EdibleValue() == 0f) numberOfTruth++;
+                            else numberOfFalse++;
+                        }
+                    }
 
-                        Console.WriteLine("hasil");
-                        Console.WriteLine(hasil[0]);
-                        Console.WriteLine(hasil[1]);
-                        Console.WriteLine("target");
-                        Console.WriteLine(mushroom.EdibleValue());
-
+                    //training
+                    numberOfTraining++;
+                    if (numberOfTraining < maxTraining)
+                    {
                         if (mushroom.EdibleValue() == 1)
                         {
                             float[] target = { 1, 0 };
                             nn.BackPropagate(target, mushroom.GetInputNodes());
-
                         }
                         else
                         {
                             float[] target = { 0, 1 };
                             nn.BackPropagate(target, mushroom.GetInputNodes());
                         }
-
                     }
-                }
-            }
 
+                }
+
+                //Console.WriteLine(numberOfTruth);
+                //Console.WriteLine(numberOfFalse);
+                float accuracy = numberOfTruth / ((float)numberOfTruth + (float)numberOfFalse);
+                return accuracy;
+            }
         }
     }
-
 }

@@ -7,17 +7,19 @@ namespace CsharpANN
         public Layer[] layers;
         public int learning_batch;
         public int learning_index;
+        public float learning_rate;
 
-        public NeuralNetwork(int[] networkShape, float learningRate, int learning_batch)
+        public NeuralNetwork(int[] networkShape, float learningRate, int learning_batch, string activation_function)
         {
             this.networkShape = networkShape;
             this.learning_batch = learning_batch;
             this.learning_index = 0;
+            this.learning_rate = learningRate;
 
             layers = new Layer[networkShape.Length - 1];
             for (int i = 0; i < layers.Length; i++)
             {
-                layers[i] = new Layer(networkShape[i], networkShape[i + 1], learningRate, learning_batch);
+                layers[i] = new Layer(networkShape[i], networkShape[i + 1], learningRate, learning_batch, activation_function);
             }
         }
 
@@ -57,20 +59,27 @@ namespace CsharpANN
                 }
                 else
                 {
-                    layers[i].Backward(layers[i - 1], learning_index);
+                    layers[i].BackwardHidden(layers[i - 1], learning_index);
                 }
+
             }
+
             learning_index++;
+
             if (learning_index == learning_batch)
             {
                 UpdateWeight();
-                learning_index == 0;
+                learning_index = 0;
             }
         }
 
         public void UpdateWeight()
         {
-
+            for (int i = layers.Length - 1; i >= 0; i--)
+            {
+                Layer layer = layers[i];
+                layer.UpdateWeight();
+            }
         }
     }
 }
