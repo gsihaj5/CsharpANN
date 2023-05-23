@@ -12,6 +12,7 @@ namespace CsharpANN
             {
                 //Console.Write("=====================");
                 //Console.WriteLine(100 * i);
+                // trying several combination of train data vs validation data
                 int maxTrain = 100 * i;
                 float accuracy = TrainOnData(maxTrain);
                 if (accuracy > max) max = accuracy;

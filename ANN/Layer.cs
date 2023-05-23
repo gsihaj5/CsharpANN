@@ -80,6 +80,7 @@ namespace CsharpANN
             }
         }
 
+        // Backward Propagation on Output layer
         public void BackwardOutput(float[] outputsArray, Layer prevLayer, int batchIndex)
         {
             float[] prevOutput = prevLayer.nodeArray;
@@ -97,6 +98,8 @@ namespace CsharpANN
                 }
             }
         }
+
+        // Backward Propagation on Hidden layer
         public void BackwardHidden(Layer prevLayer, int batchIndex)
         {
             float[] prevOutput = prevLayer.nodeArray;
@@ -114,6 +117,7 @@ namespace CsharpANN
             }
         }
 
+        // Backward Propagation on Input layer
         public void BackwardInput(float[] inputsArray, int batchIndex)
         {
             float[] prevOutput = inputsArray;
@@ -147,6 +151,7 @@ namespace CsharpANN
                 }
             }
         }
+
         private float ActivationDerivative(float value){
             if(this.activation_function == "Relu") return ReLUDerivative(value);
             else if(this.activation_function == "Sigmoid") SigmoidDerivative(value);
