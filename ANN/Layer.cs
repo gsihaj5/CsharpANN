@@ -48,12 +48,16 @@ namespace CsharpANN
 
             nodeArray = new float[n_nodes];
 
-            Random rand = new Random();
+            RandomNormal rand = new RandomNormal();
+            double mean = 0.0;
+            double standardDeviation = 5.0;
 
             //init bias
             for (int i = 0; i < biasesArray.Length; i++)
             {
-                biasesArray[i] = (float)rand.Next(-100, 100) / 100f;
+                //biasesArray[i] = (float)rand.Next(-100, 100) / 100f;
+                biasesArray[i] = (float) rand.NextNormal(mean,standardDeviation);
+                //biasesArray[i] = 0;
             }
 
             //init weights
@@ -61,7 +65,8 @@ namespace CsharpANN
             {
                 for (int j = 0; j < n_inputs; j++)
                 {
-                    weightsArray[i, j] = (float)rand.Next(-100, 100) / 100f;
+                    //weightsArray[i, j] = (float)rand.Next(-100, 100) / 100f;
+                    weightsArray[i, j] = (float) rand.NextNormal(mean,standardDeviation);
                 }
             }
         }

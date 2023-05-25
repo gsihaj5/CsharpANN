@@ -8,7 +8,7 @@ namespace CsharpANN
         public static void Main()
         {
             float max = 0;
-            for (int i = 1; i <= 70; i++)
+            for (int i = 1; i <= 50; i++)
             {
                 //Console.Write("=====================");
                 //Console.WriteLine(100 * i);
@@ -27,7 +27,7 @@ namespace CsharpANN
             using (var reader = new StreamReader(@"./mushrooms.csv"))
             {
                 int[] networkShape = { 9, 20, 2 };
-                NeuralNetwork nn = new NeuralNetwork(networkShape, .01f, 100, "sigmoid");
+                NeuralNetwork nn = new NeuralNetwork(networkShape, .01f, 10, "Sigmoid");
                 int numberOfTraining = 0;
 
                 int numberOfTruth = 0;
