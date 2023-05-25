@@ -8,7 +8,7 @@ namespace CsharpANN
         public static void Main()
         {
             float max = 0;
-            for (int i = 1; i <= 100; i++)
+            for (int i = 1; i <= 70; i++)
             {
                 //Console.Write("=====================");
                 //Console.WriteLine(100 * i);

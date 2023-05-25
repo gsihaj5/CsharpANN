@@ -154,7 +154,7 @@ namespace CsharpANN
 
         private float ActivationDerivative(float value){
             if(this.activation_function == "Relu") return ReLUDerivative(value);
-            else if(this.activation_function == "Sigmoid") SigmoidDerivative(value);
+            else if(this.activation_function == "Sigmoid") return SigmoidDerivative(value);
 
             return 0f;
         }
