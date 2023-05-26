@@ -160,6 +160,7 @@ namespace CsharpANN
         private float ActivationDerivative(float value){
             if(this.activation_function == "Relu") return ReLUDerivative(value);
             else if(this.activation_function == "Sigmoid") return SigmoidDerivative(value);
+            else if(this.activation_function == "Selu") return SELUDerivative(value);
 
             return 0f;
         }
@@ -174,11 +175,39 @@ namespace CsharpANN
             return (1/(1+(MathF.Exp(-value))));
         }
 
+        public float SELUDerivative(float x, float alpha = 1.67326f, float scale = 1.0507f)
+        {
+            if (x > 0)
+            {
+                return scale;
+            }
+            else
+            {
+                return scale * alpha * (float)Math.Exp(x);
+            }
+        }
+
 
         public void Activation()
         {
             if(this.activation_function == "Relu") ReluActivation();
             else if(this.activation_function == "Sigmoid") SigmoidActivation();
+            else if(this.activation_function == "Selu") Selu();
+        }
+
+        public void Selu(float alpha = 1.67326f, float scale = 1.0507f)
+        {
+            for (int i = 0; i < n_nodes; i++)
+            {
+                if (nodeArray[i] > 0)
+                {
+                    nodeArray[i] = scale * nodeArray[i];
+                }
+                else
+                {
+                    nodeArray[i] = scale * (alpha * (float)Math.Exp(nodeArray[i]) - alpha);
+                }
+            }
         }
 
         public void ReluActivation(){
